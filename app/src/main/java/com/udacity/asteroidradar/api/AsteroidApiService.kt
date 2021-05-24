@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.AsteroidProperty
+import com.udacity.asteroidradar.Config
 import com.udacity.asteroidradar.PictureOfDay
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
