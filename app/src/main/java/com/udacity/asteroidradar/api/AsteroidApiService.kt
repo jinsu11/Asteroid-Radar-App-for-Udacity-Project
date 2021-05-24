@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.AsteroidProperty
 import com.udacity.asteroidradar.BuildConfig
+import com.udacity.asteroidradar.Config
 import com.udacity.asteroidradar.PictureOfDay
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -16,7 +17,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 private const val BASE_URL = "https://api.nasa.gov"
-private const val API_KEY = "QxCjTllMxeaQYWmQ3s2UPX4XvKTicjJNxSl8hAfz"
 
 private val okHttpClient = OkHttpClient.Builder()
     .addInterceptor { apiKeyInterceptor(it) }
@@ -27,7 +27,7 @@ private fun apiKeyInterceptor(it: Interceptor.Chain): Response{
     val originalHttpUrl = originalRequest.url()
 
     val newHttpUrl = originalHttpUrl.newBuilder()
-        .addQueryParameter("api_key", API_KEY)
+        .addQueryParameter("api_key", Config.API_KEY)
         .build()
 
     val newRequest = originalRequest.newBuilder()
