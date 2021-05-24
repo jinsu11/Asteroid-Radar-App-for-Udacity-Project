@@ -9,7 +9,7 @@ interface AsteroidDao {
     @Insert
     suspend fun insert(asteroid: AsteroidEntity)
 
-    @Query("SELECT * FROM asteroid ORDER BY close_approach_date DESC")
+    @Query("SELECT * FROM asteroid ORDER BY close_approach_date ASC")
     suspend fun getAllAsteroids(): List<AsteroidEntity>?
 
     @Query("DELETE FROM asteroid")
