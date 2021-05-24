@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
@@ -19,6 +20,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TAG = "MainViewModel"
         const val LOADING = View.VISIBLE
         const val LOADING_DONE = View.GONE
+        const val PICTURE_URL = "pictureUrl"
+        const val PICTURE_DESCRIPTION = "pictureDescription"
     }
 
     private val _fetchedAsteroidProperty = MutableLiveData<List<Asteroid>?>()
@@ -33,11 +36,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val pictureUrl: LiveData<String>
         get() = _pictureUrl
 
+    private val _pictureDescription = MutableLiveData<String>()
+    val pictureDescription: LiveData<String>
+        get() = _pictureDescription
+
     private val _status = MutableLiveData<Int>()
     val status: LiveData<Int>
         get() = _status
 
-    val dataSource = AsteroidDatabase.getInstance(application).asteroidDatabaseDao
+    private val dataSource = AsteroidDatabase.getInstance(application).asteroidDatabaseDao
+
+    private val pref = application.getSharedPreferences("com.udacity.asteroidradar", Context.MODE_PRIVATE)
+
 
     init {
         _status.value = LOADING_DONE
@@ -77,8 +87,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         dataSource.insert(asteroidEntity)
                     }
                 }
-                _pictureUrl.value = pictureProperty.url
                 _fetchedAsteroidProperty.value = asteroids.toList()
+
+                pref.edit().apply {
+                    putString(PICTURE_URL, pictureProperty.url)
+                    putString(PICTURE_DESCRIPTION, pictureProperty.title)
+                }.apply()
+                _pictureUrl.value = pictureProperty.url
+                _pictureDescription.value = pictureProperty.title
             } catch (e: Exception){
                 _fetchedAsteroidProperty.value = null
                 e.printStackTrace()
@@ -103,8 +119,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     _fetchedAsteroidProperty.value = parcelableAsteroids.toList()
 
-                    val pictureProperty: PictureOfDay = AsteroidApi.retrofitService.getPictureProperty()
-                    _pictureUrl.value = pictureProperty.url
+                    _pictureUrl.value = pref.getString(PICTURE_URL, "")
+                    _pictureDescription.value = pref.getString(PICTURE_DESCRIPTION,"")
                 }
             } catch (e: Exception){
                 e.printStackTrace()

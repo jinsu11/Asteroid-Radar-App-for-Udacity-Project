@@ -32,7 +32,6 @@ class MainFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val binding = FragmentMainBinding.inflate(inflater)
         val pref = requireContext().getSharedPreferences("com.udacity.asteroidradar", Context.MODE_PRIVATE)
-        val application = requireActivity().application
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -48,12 +47,11 @@ class MainFragment : Fragment() {
                 viewModel.recyclerAdapter.notifyDataSetChanged()
                 pref.edit().putString(SAVED_DATE, SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())).apply()
             } else{
-                Toast.makeText(requireContext(), "데이터 불러오기에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
             }
         })
 
         viewModel.selectedAsteroid.observe(viewLifecycleOwner, Observer {
-            Log.i("ASDSDA", "oneDayProperty: $it")
             it?.let {
                 findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.doneNavigating()
