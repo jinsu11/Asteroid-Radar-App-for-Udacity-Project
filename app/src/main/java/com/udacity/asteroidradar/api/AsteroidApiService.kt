@@ -1,20 +1,13 @@
 package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.AsteroidProperty
-import com.udacity.asteroidradar.BuildConfig
-import com.udacity.asteroidradar.Config
 import com.udacity.asteroidradar.PictureOfDay
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import org.json.JSONObject
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.http.Field
 import retrofit2.http.GET
-import retrofit2.http.Query
 
 private const val BASE_URL = "https://api.nasa.gov"
 
