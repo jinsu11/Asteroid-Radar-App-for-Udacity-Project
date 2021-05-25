@@ -28,10 +28,13 @@ class MainFragment : Fragment() {
     val TAG = "MainFragment"
     val SAVED_DATE = "savedDate"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val binding = FragmentMainBinding.inflate(inflater)
-        val pref = requireContext().getSharedPreferences("com.udacity.asteroidradar", Context.MODE_PRIVATE)
+        val pref =
+            requireContext().getSharedPreferences("com.udacity.asteroidradar", Context.MODE_PRIVATE)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -40,13 +43,22 @@ class MainFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        viewModel.isAsteroidFetched.observe(viewLifecycleOwner, Observer { isFetched ->
+            if(isFetched)
+                viewModel.getSavedAsteroids()
+            else
+                Toast.makeText(requireContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show()
+        })
 
         viewModel.fetchedAsteroidProperty.observe(viewLifecycleOwner, Observer { asteroids ->
-            if(asteroids != null){
+            if (asteroids != null) {
                 viewModel.recyclerAdapter.items = asteroids
                 viewModel.recyclerAdapter.notifyDataSetChanged()
-                pref.edit().putString(SAVED_DATE, SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())).apply()
-            } else{
+                pref.edit().putString(
+                    SAVED_DATE,
+                    SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())
+                ).apply()
+            } else {
                 Toast.makeText(requireContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
             }
         })
@@ -61,16 +73,20 @@ class MainFragment : Fragment() {
         viewModel.pictureUrl.observe(viewLifecycleOwner, Observer { url ->
             Log.i(TAG, "url: $url")
             Picasso.with(requireContext())
-                    .load(url)
-                    .placeholder(R.drawable.loading_animation)
-                    .error(R.drawable.ic_broken_image)
-                    .into(binding.activityMainImageOfTheDay)
+                .load(url)
+                .placeholder(R.drawable.loading_animation)
+                .error(R.drawable.ic_broken_image)
+                .into(binding.activityMainImageOfTheDay)
+        })
+
+        viewModel.pictureDescription.observe(viewLifecycleOwner, Observer { description ->
+            binding.activityMainImageOfTheDay.contentDescription = description
         })
 
         val today = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())
-        if(pref.getString(SAVED_DATE, "") != today)
+        if (pref.getString(SAVED_DATE, "") != today)
             viewModel.getAsteroidProperties()
-        else{
+        else {
             viewModel.getSavedAsteroids()
         }
 

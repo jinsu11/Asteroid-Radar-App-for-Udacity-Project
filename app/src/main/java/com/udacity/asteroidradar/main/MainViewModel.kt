@@ -28,6 +28,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val fetchedAsteroidProperty: LiveData<List<Asteroid>?>
         get() = _fetchedAsteroidProperty
 
+    private val _isAsteroidFetched = MutableLiveData<Boolean>()
+    val isAsteroidFetched: LiveData<Boolean>
+        get() = _isAsteroidFetched
+
     private val _selectedAsteroid = MutableLiveData<Asteroid?>()
     val selectedAsteroid: LiveData<Asteroid?>
         get() = _selectedAsteroid
@@ -87,16 +91,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         dataSource.insert(asteroidEntity)
                     }
                 }
-                _fetchedAsteroidProperty.value = asteroids.toList()
+//                _fetchedAsteroidProperty.value = asteroids.toList()
 
                 pref.edit().apply {
                     putString(PICTURE_URL, pictureProperty.url)
                     putString(PICTURE_DESCRIPTION, pictureProperty.title)
                 }.apply()
-                _pictureUrl.value = pictureProperty.url
-                _pictureDescription.value = pictureProperty.title
+//                _pictureUrl.value = pictureProperty.url
+//                _pictureDescription.value = pictureProperty.title
+                _isAsteroidFetched.value = true
             } catch (e: Exception){
-                _fetchedAsteroidProperty.value = null
+                _isAsteroidFetched.value = false
                 e.printStackTrace()
             } finally {
                 _status.value = LOADING_DONE
