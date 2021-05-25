@@ -3,13 +3,15 @@ package com.udacity.asteroidradar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.databinding.AsteroidItemBinding
 
-class RecyclerAdapter(val onClickListener: OnClickListener): RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val onClickListener: OnClickListener): ListAdapter<Asteroid, RecyclerAdapter.ViewHolder>(AsteroidDiffCallback()) {
     var items = listOf<Asteroid>()
 
-    class ViewHolder(val binding: AsteroidItemBinding): RecyclerView.ViewHolder(binding.root){}
+    class ViewHolder(val binding: AsteroidItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = AsteroidItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -32,5 +34,15 @@ class RecyclerAdapter(val onClickListener: OnClickListener): RecyclerView.Adapte
 
     class OnClickListener(val clickListener: (asteroid: Asteroid) -> Unit){
         fun onClick(asteroid: Asteroid) = clickListener(asteroid)
+    }
+}
+
+class AsteroidDiffCallback: DiffUtil.ItemCallback<Asteroid>() {
+    override fun areItemsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
+        return oldItem == newItem
     }
 }
