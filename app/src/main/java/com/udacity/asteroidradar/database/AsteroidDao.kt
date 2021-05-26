@@ -12,6 +12,9 @@ interface AsteroidDao {
     @Query("SELECT * FROM asteroid ORDER BY close_approach_date ASC")
     suspend fun getAllAsteroids(): List<AsteroidEntity>?
 
+    @Query("SELECT * FROM asteroid WHERE close_approach_date = :date")
+    suspend fun getTodayAsteroid(date: String): List<AsteroidEntity>?
+
     @Query("DELETE FROM asteroid")
     suspend fun clear()
 

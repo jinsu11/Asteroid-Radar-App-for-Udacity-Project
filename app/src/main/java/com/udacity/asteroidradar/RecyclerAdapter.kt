@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.databinding.AsteroidItemBinding
 
 class RecyclerAdapter(val onClickListener: OnClickListener): ListAdapter<Asteroid, RecyclerAdapter.ViewHolder>(AsteroidDiffCallback()) {
-    var items = listOf<Asteroid>()
+//    var items = listOf<Asteroid>()
 
     class ViewHolder(val binding: AsteroidItemBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -20,17 +20,19 @@ class RecyclerAdapter(val onClickListener: OnClickListener): ListAdapter<Asteroi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.textTitle.text = items[position].codename
-        holder.binding.textDate.text = items[position].closeApproachDate
+        val item = getItem(position)
+
+        holder.binding.textTitle.text = item.codename
+        holder.binding.textDate.text = item.closeApproachDate
         holder.binding.imageIcon.setImageResource(
-                if(items[position].isPotentiallyHazardous) R.drawable.ic_status_potentially_hazardous else R.drawable.ic_status_normal
+                if(item.isPotentiallyHazardous) R.drawable.ic_status_potentially_hazardous else R.drawable.ic_status_normal
         )
         holder.binding.root.setOnClickListener {
-            onClickListener.onClick(items[position])
+            onClickListener.onClick(item)
         }
     }
 
-    override fun getItemCount(): Int = items.size
+//    override fun getItemCount(): Int = items.size
 
     class OnClickListener(val clickListener: (asteroid: Asteroid) -> Unit){
         fun onClick(asteroid: Asteroid) = clickListener(asteroid)

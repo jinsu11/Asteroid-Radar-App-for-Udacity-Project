@@ -28,6 +28,9 @@ class MainFragment : Fragment() {
     val TAG = "MainFragment"
     val SAVED_DATE = "savedDate"
 
+    private val todayStr: String = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,19 +48,15 @@ class MainFragment : Fragment() {
 
         viewModel.isAsteroidFetched.observe(viewLifecycleOwner, Observer { isFetched ->
             if(isFetched)
-                viewModel.getSavedAsteroids()
+                viewModel.getSavedAsteroids(MainViewModel.SHOW_TYPE.SHOW_ALL)
             else
                 Toast.makeText(requireContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show()
         })
 
         viewModel.fetchedAsteroidProperty.observe(viewLifecycleOwner, Observer { asteroids ->
             if (asteroids != null) {
-                viewModel.recyclerAdapter.items = asteroids
-                viewModel.recyclerAdapter.notifyDataSetChanged()
-                pref.edit().putString(
-                    SAVED_DATE,
-                    SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())
-                ).apply()
+                viewModel.recyclerAdapter.submitList(asteroids)
+                pref.edit().putString(SAVED_DATE, todayStr).apply()
             } else {
                 Toast.makeText(requireContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
             }
@@ -83,11 +82,10 @@ class MainFragment : Fragment() {
             binding.activityMainImageOfTheDay.contentDescription = description
         })
 
-        val today = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT).format(Date())
-        if (pref.getString(SAVED_DATE, "") != today)
+        if (pref.getString(SAVED_DATE, "") != todayStr)
             viewModel.getAsteroidProperties()
         else {
-            viewModel.getSavedAsteroids()
+            viewModel.getSavedAsteroids(MainViewModel.SHOW_TYPE.SHOW_ALL)
         }
 
         return binding.root
@@ -99,6 +97,11 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.next_week_asteroids -> viewModel.getAsteroidProperties()
+            R.id.today_asteroids -> viewModel.getSavedAsteroids(MainViewModel.SHOW_TYPE.SHOW_TODAY, todayStr)
+            R.id.saved_asteroids -> viewModel.getSavedAsteroids(MainViewModel.SHOW_TYPE.SHOW_ALL)
+        }
         return true
     }
 }
